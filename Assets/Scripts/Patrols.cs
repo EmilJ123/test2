@@ -3,25 +3,31 @@ using UnityEngine.AI;
 
 public class Patrols : MonoBehaviour
 {
-    public Transform[] patrolPoints;
-    private int currentPointIndex = 0;
-    private NavMeshAgent agent;
 
-    void Start()
-    {
-        agent = GetComponent<NavMeshAgent>();
-        agent.updatePosition = false;
-        agent.updateRotation = false;
-        agent.SetDestination(patrolPoints[currentPointIndex].position);
-    }
+
+    public Transform[] patrolPoints;
+    private int currentPoint = 0;
+    public float speed = 2f;
 
     void Update()
     {
-        if (!agent.pathPending && agent.remainingDistance < 0.1f)
+        Transform target = patrolPoints[currentPoint];
+        transform.position = Vector2.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+
+        if (Vector2.Distance(transform.position, target.position) < 0.1f)
         {
-            currentPointIndex = (currentPointIndex + 1) % patrolPoints.Length;
-            agent.SetDestination(patrolPoints[currentPointIndex].position);
+            currentPoint = (currentPoint + 1) % patrolPoints.Length;
         }
     }
     
+    private NavMeshAgent agent;
+
+    private void Start()
+    {
+        agent = GetComponent<NavMeshAgent>();
+        agent.updateRotation = false;
+        agent.updateUpAxis = false;
+    }
+    
+
 }
